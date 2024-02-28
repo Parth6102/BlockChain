@@ -1,0 +1,95 @@
+#include <iostream>
+#include <ctime>
+#include <list>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+class Block
+{
+public:
+    int index=2;
+    int nonse;
+    string prevHash;
+    string currHash;
+    time_t timestamp;
+    int data; 
+
+    Block()
+    {
+    }
+
+    Block(string prevHash, int data)
+    {
+        this->prevHash = prevHash;
+        this->data = data;
+        timestamp = time(0);
+
+        int lb = 1, ub = 99;
+        for (int i = 0; i < 5; i++)
+            nonse = (rand() % (ub - lb + 1)) + lb;
+
+        currHash = calculateHash();
+        // calculateHash();
+
+    }
+
+    string calculateHash()
+    {
+        string in, ts;
+        in = to_string(index);
+        ts = to_string(timestamp);
+        string whole;
+        whole.append(in + prevHash + ts);
+        hash<string> myHash;
+        return to_string(myHash(whole));
+
+    }
+};
+
+class myBlock : public Block
+{
+    list<Block> blockChain;
+
+public:
+    myBlock()
+    {
+
+    }
+
+    myBlock(int data)
+    {
+        Block b("0", data);
+        blockChain.push_back(b);
+    }
+
+    void addBlock(int data)
+    {
+        // const Block prevBlock = blockChain.back();
+        Block b1(blockChain.back().currHash,data);
+        blockChain.push_back(b1);
+    }
+
+    void printChain() const
+    {
+        for (const auto &block : blockChain)
+        {
+            cout << "Block #" << block.index << "\n";
+            cout << "Previous Hash: " << block.prevHash << "\n";
+        }
+    }
+};
+
+int main()
+{
+    myBlock m(1);
+
+    m.addBlock(1);
+    m.addBlock(2);
+    m.addBlock(3);
+
+    m.printChain();
+
+    return 0;
+}

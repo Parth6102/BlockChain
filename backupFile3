@@ -1,0 +1,114 @@
+#include <iostream>
+#include <ctime>
+#include <list>
+#include <vector>
+#include <sstream>
+#include <string>
+
+using namespace std;
+
+class Transaction
+{
+public:
+    string sender;
+    string reciver;
+    unsigned long money;
+};
+
+class Block
+{
+public:
+    int nonse;
+    int index;
+    unsigned long long prevHash;
+    unsigned long long currHash;
+    time_t timestamp;
+    Transaction t;
+
+    Block()
+    {
+    }
+
+    Block(int index, unsigned long long prevHash,Transaction &t)
+    {
+        this->index = index;
+        this->prevHash = prevHash;
+        timestamp = time(0);
+
+        int lb = 1, ub = 9999;
+        for (int i = 0; i < 5; i++)
+            nonse = (rand() % (ub - lb + 1)) + lb;
+
+        currHash = calculateHash();
+        this->t=t;
+    }
+
+    unsigned long long calculateHash()
+    {
+        string in, nn, ts, ph;
+        in = to_string(index);
+        nn = to_string(nonse);
+        ts = to_string(timestamp);
+        ph = to_string(prevHash);
+        string whole;
+        whole.append(in + nn + ts + ph);
+        hash<string> myHash;
+        return myHash(whole);
+    }
+};
+
+class myBlock
+{
+    list<Block> blockChain;
+    Transaction t;
+
+
+public:
+    myBlock()
+    {
+    }
+
+    myBlock(string sender, string reciver, unsigned long money)
+    {
+        t.sender=sender;
+        t.reciver=reciver;
+        t.money=money;
+        blockChain.push_back(Block(blockChain.size(), 0,t));
+    }
+
+    void addBlock(string sender, string reciver, unsigned long money)
+    {
+        t.sender=sender;
+        t.reciver=reciver;
+        t.money=money;
+        blockChain.push_back(Block(blockChain.size(), blockChain.back().currHash,t));
+    }
+
+    void printChain() const
+    {
+        for (const auto &block : blockChain)
+        {
+            cout << "Block #" << block.index << "\n";
+            cout << "Timestamp: " << asctime(localtime(&block.timestamp));
+            cout << "Previous Hash: " << block.prevHash << "\n";
+            cout << "Current Hash: " << block.currHash << "\n";
+            cout << "Transactions:\n";
+            cout << "  Sender: " << block.t.sender << ", Receiver: " << block.t.reciver << ", Amount: " << block.t.money << "\n";
+            
+            cout << "\n";
+        }
+    }
+};
+
+int main()
+{
+    myBlock m("Sender1", "Receiver1", 1);
+
+    m.addBlock("Sender2", "Receiver2", 2);
+    m.addBlock("Sender3", "Receiver3", 3);
+    m.addBlock("Sender4", "Receiver4", 4);
+
+    m.printChain();
+
+    return 0;
+}
