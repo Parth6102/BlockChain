@@ -51,7 +51,7 @@ public:
         this->t = t;
         timestamp = time(0);
 
-        int lb = 1, ub = 9999;
+        int lb = 9, ub = 9999;
         nonse = (rand() % (ub - lb + 1)) + lb;
         currHash = calculateHash();
     }
